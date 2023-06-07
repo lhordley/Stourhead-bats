@@ -49,62 +49,64 @@ cor.test(bat_rich$richness, bat_rich$deadwood_snags) # r=0.061, p=0.63
 ## remove deadwood snags from analysis
 
 # Total richness
-tot_rich_arable1 <- glmer(richness ~ prop_arable.500 + (1|subcompartment) + (1|visit),
+tot_rich_arable1 <- glmer(richness ~ prop_arable.500 + visit + (1|subcompartment),
                           family=poisson(), data=bat_rich)
 summary(tot_rich_arable1)
 r.squaredGLMM(tot_rich_arable1) # 0.003728972    
-tot_rich_arable2 <- glmer(richness ~ prop_arable.1500 + (1|subcompartment) + (1|visit),
+tot_rich_arable2 <- glmer(richness ~ prop_arable.1500 + visit + (1|subcompartment),
                           family=poisson(), data=bat_rich)
 summary(tot_rich_arable2) 
 r.squaredGLMM(tot_rich_arable2) # 0.0001509244   
-tot_rich_arable3 <- glmer(richness ~ prop_arable.3000 + (1|subcompartment) + (1|visit),
+tot_rich_arable3 <- glmer(richness ~ prop_arable.3000 + visit + (1|subcompartment),
                           family=poisson(), data=bat_rich)
 summary(tot_rich_arable3)    
 r.squaredGLMM(tot_rich_arable3) # 0.003820198   
 #### ARABLE 3000M #### (previously arable 500m)
 
-tot_rich_broad1 <- glmer(richness ~ prop_broadleaf.500 + (1|subcompartment) + (1|visit),
+tot_rich_broad1 <- glmer(richness ~ prop_broadleaf.500 + visit + (1|subcompartment),
                          family=poisson(), data=bat_rich)
 summary(tot_rich_broad1) 
 r.squaredGLMM(tot_rich_broad1) # 0.009587220     
-tot_rich_broad2 <- glmer(richness ~ prop_broadleaf.1500 + (1|subcompartment) + (1|visit),
+tot_rich_broad2 <- glmer(richness ~ prop_broadleaf.1500 + visit + (1|subcompartment),
                          family=poisson(), data=bat_rich)
 summary(tot_rich_broad2)
 r.squaredGLMM(tot_rich_broad2) # 0.005287890     
-tot_rich_broad3 <- glmer(richness ~ prop_broadleaf.3000 + (1|subcompartment) + (1|visit),
+tot_rich_broad3 <- glmer(richness ~ prop_broadleaf.3000 + visit + (1|subcompartment),
                          family=poisson(), data=bat_rich)
 summary(tot_rich_broad3) 
 r.squaredGLMM(tot_rich_broad3) # 0.01426713    
 #### BROADLEAF 3000M ####  (same as before)
 
 
-tot_rich_conifer1 <- glmer(richness ~ prop_conifer.500 + (1|subcompartment) + (1|visit),
+tot_rich_conifer1 <- glmer(richness ~ prop_conifer.500 + visit + (1|subcompartment),
                            family=poisson(), data=bat_rich)
 summary(tot_rich_conifer1)   
 r.squaredGLMM(tot_rich_conifer1) # 0.002762292      
-tot_rich_conifer2 <- glmer(richness ~ prop_conifer.1500 + (1|subcompartment) + (1|visit),
+tot_rich_conifer2 <- glmer(richness ~ prop_conifer.1500 + visit + (1|subcompartment),
                            family=poisson(), data=bat_rich)
 summary(tot_rich_conifer2)       
 r.squaredGLMM(tot_rich_conifer2) # 0.03986401      
-tot_rich_conifer3 <- glmer(richness ~ prop_conifer.3000 + (1|subcompartment) + (1|visit),
+tot_rich_conifer3 <- glmer(richness ~ prop_conifer.3000 + visit + (1|subcompartment),
                            family=poisson(), data=bat_rich)
 summary(tot_rich_conifer3)         
 r.squaredGLMM(tot_rich_conifer3) # 0.03763621     
 #### CONIFER 1500M #### (previously conifer 3000m) 
 
-tot_rich_grass1 <- glmer(richness ~ prop_grassland.500 + (1|subcompartment) + (1|visit),
+tot_rich_grass1 <- glmer(richness ~ prop_grassland.500 + visit + (1|subcompartment),
                          family=poisson(), data=bat_rich)
 summary(tot_rich_grass1)        
 r.squaredGLMM(tot_rich_grass1) # 0.0007923292       
-tot_rich_grass2 <- glmer(richness ~ prop_grassland.1500 + (1|subcompartment) + (1|visit),
+tot_rich_grass2 <- glmer(richness ~ prop_grassland.1500 + visit + (1|subcompartment),
                          family=poisson(), data=bat_rich)
 summary(tot_rich_grass2)                   
 r.squaredGLMM(tot_rich_grass2) # 0.03962581       
-tot_rich_grass3 <- glmer(richness ~ prop_grassland.3000 + (1|subcompartment) + (1|visit),
+tot_rich_grass3 <- glmer(richness ~ prop_grassland.3000 + visit + (1|subcompartment),
                          family=poisson(), data=bat_rich)
 summary(tot_rich_grass3)          
 r.squaredGLMM(tot_rich_grass3) # 0.01488594      
 #### GRASSLAND 1500M #### (same as before)
+# same buffers selected when visit moved from random to fixed
+
 summary(tot_rich_arable3)$coefficients[1,1]
 tot_rich_arable3$terms
 names(model.frame(tot_rich_arable3))[2]
@@ -128,7 +130,7 @@ write.csv(tot_rich_land, file="Results/Bats/Total_richness_land_cover.csv", row.
 tot_rich_hab <- glmmTMB(richness ~ scale(dbh_average) + scale(basal_area) +
                         scale(per_broadleaf_canopy) + scale(complexity_score) + 
                         scale(canopy_openess) + 
-                        scale(fallen_deadwood) + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+                        scale(fallen_deadwood) + scale(dis_to_edge) + visit + (1|subcompartment),
                         data = bat_rich, family = "genpois", na.action = "na.fail",
                         control=glmmTMBControl(optimizer=optim,
                                                optArgs=list(method="BFGS")))
@@ -140,7 +142,7 @@ richness_dbh <- ggplot(pred, aes(x, predicted)) +
         geom_line() +
         geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = .1)+
         geom_point(data=bat_rich, aes(x=dbh_average, y=richness))+
-        labs(x="Average DBH", y="Total species richness")+
+        labs(x="Mean DBH", y="Total species \nrichness")+
         scale_y_continuous(breaks=c(2,4,6,8,10))+
         theme_classic()
 richness_dbh
@@ -150,7 +152,7 @@ final_mod2 <- glmmTMB(richness ~ scale(dbh_average) + scale(basal_area) +
                           scale(per_broadleaf_canopy) + scale(complexity_score) + 
                           scale(canopy_openess) + 
                           scale(fallen_deadwood) + scale(dis_to_edge) + 
-                          scale(prop_arable.3000) + (1|visit) + (1|subcompartment),
+                          scale(prop_arable.3000) + visit + (1|subcompartment),
                           data = bat_rich, family = "genpois")
 AIC(final_mod2)
 summary(final_mod2)
@@ -159,7 +161,7 @@ final_mod3 <- glmmTMB(richness ~ scale(dbh_average) + scale(basal_area) +
                           scale(per_broadleaf_canopy) + scale(complexity_score) + 
                           scale(canopy_openess) + 
                           scale(fallen_deadwood) + scale(dis_to_edge) + 
-                          scale(prop_broadleaf.3000) + (1|visit) + (1|subcompartment),
+                          scale(prop_broadleaf.3000) + visit + (1|subcompartment),
                           data = bat_rich, family = "genpois", na.action = "na.fail")
 AIC(final_mod3)
 summary(final_mod3)
@@ -168,7 +170,7 @@ final_mod4 <- glmmTMB(richness ~ scale(dbh_average) + scale(basal_area) +
                           scale(per_broadleaf_canopy) + scale(complexity_score) + 
                           scale(canopy_openess) + 
                           scale(fallen_deadwood) + scale(dis_to_edge) + 
-                          scale(prop_conifer.1500) + (1|visit) + (1|subcompartment),
+                          scale(prop_conifer.1500) + visit + (1|subcompartment),
                           data = bat_rich, family = "genpois", na.action = "na.fail")
 AIC(final_mod4)
 summary(final_mod4)
@@ -177,12 +179,13 @@ final_mod5 <- glmmTMB(richness ~ scale(dbh_average) + scale(basal_area) +
                           scale(per_broadleaf_canopy) + scale(complexity_score) + 
                           scale(canopy_openess) + 
                           scale(fallen_deadwood) + scale(dis_to_edge) + 
-                          scale(prop_grassland.1500) + (1|visit) + (1|subcompartment),
+                          scale(prop_grassland.1500) + visit + (1|subcompartment),
                           data = bat_rich, family = "genpois", na.action = "na.fail")
 AIC(final_mod5)
 summary(final_mod5)
 
-
+# same model selected random vs fixed (no model with AIC lower than 2 values, so habitat model selected)
+# same significant habitat variables too
 
 ## check model assumptions
 testDispersion(final_mod5) ## no underdispersion (if red line is to the left = underdispersion)
@@ -239,58 +242,59 @@ cor.test(noctula$activity_rate, noctula$per_broadleaf_canopy) # r=-0.0396, p=0.7
 cor.test(noctula$activity_rate, noctula$deadwood_snags) # r=-0.03377, p=0.8
 ## remove deadwood snags from analysis
 
-tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + (1|subcompartment) + (1|visit),
+tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=noctula)
 summary(tot_act_arable1)
 r.squaredGLMM(tot_act_arable1) # 0.012609211     
-tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + (1|subcompartment) + (1|visit),
+tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=noctula)
 summary(tot_act_arable2) 
 r.squaredGLMM(tot_act_arable2) # 0.005775566     
-tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + (1|subcompartment) + (1|visit),
+tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=noctula)
 summary(tot_act_arable3)    
 r.squaredGLMM(tot_act_arable3) # 0.00034868295    
 #### ARABLE 500M #### 
 
-tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + (1|subcompartment) + (1|visit),
+tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=noctula)
 summary(tot_act_broad1) 
 r.squaredGLMM(tot_act_broad1) # 0.0008915553      
-tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + (1|subcompartment) + (1|visit),
+tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=noctula)
 summary(tot_act_broad2)
 r.squaredGLMM(tot_act_broad2) # 0.006999837      
-tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + (1|subcompartment) + (1|visit),
+tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=noctula)
 summary(tot_act_broad3) 
 r.squaredGLMM(tot_act_broad3) # 0.009129797     
 #### BROADLEAF 1500M #### (3000m previously)
+# 3000M now when visit is fixed variable
 
 
-tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + (1|subcompartment) + (1|visit),
+tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + visit + (1|subcompartment),
                            family=binomial, weights=tot_intervals, data=noctula)
 summary(tot_act_conifer1)   
 r.squaredGLMM(tot_act_conifer1) # 0.000033127905       
-tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + (1|subcompartment) + (1|visit),
+tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + visit + (1|subcompartment),
                            family=binomial, weights=tot_intervals, data=noctula)
 summary(tot_act_conifer2)       
 r.squaredGLMM(tot_act_conifer2) # 0.020423808       
-tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + (1|subcompartment) + (1|visit),
+tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + visit + (1|subcompartment),
                            family=binomial, weights=tot_intervals, data=noctula)
 summary(tot_act_conifer3)         
 r.squaredGLMM(tot_act_conifer3) # 0.0043533300      
 #### CONIFER 1500M #### 
 
-tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + (1|subcompartment) + (1|visit),
+tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=noctula)
 summary(tot_act_grass1)        
 r.squaredGLMM(tot_act_grass1) # 0.00012180625        
-tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + (1|subcompartment) + (1|visit),
+tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=noctula)
 summary(tot_act_grass2)                   
 r.squaredGLMM(tot_act_grass2) # 0.007494143        
-tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + (1|subcompartment) + (1|visit),
+tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=noctula)
 summary(tot_act_grass3)          
 r.squaredGLMM(tot_act_grass3) # 0.0038252987       
@@ -315,7 +319,7 @@ write.csv(tot_act_land, file="Results/Bats/Nyctalus_noctula_land_cover.csv", row
 sp_act_hab <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                           scale(per_broadleaf_canopy) + scale(complexity_score) + 
                           scale(canopy_openess) + 
-                          scale(fallen_deadwood) + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+                          scale(fallen_deadwood) + scale(dis_to_edge) + visit + (1|subcompartment),
                         data = noctula, family = binomial, weights=tot_intervals)
 summary(sp_act_hab)
 AIC(sp_act_hab)
@@ -324,7 +328,7 @@ final_mod2 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                         scale(per_broadleaf_canopy) + scale(complexity_score) + 
                         scale(canopy_openess) + 
                         scale(fallen_deadwood) + scale(dis_to_edge) + 
-                        scale(prop_arable.500) + (1|visit) + (1|subcompartment),
+                        scale(prop_arable.500) + visit + (1|subcompartment),
                       data = noctula, family = binomial, weights=tot_intervals)
 AIC(final_mod2)
 
@@ -332,7 +336,7 @@ final_mod3 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                         scale(per_broadleaf_canopy) + scale(complexity_score) + 
                         scale(canopy_openess) + 
                         scale(fallen_deadwood) + scale(dis_to_edge) + 
-                        scale(prop_broadleaf.1500) + (1|visit) + (1|subcompartment),
+                        scale(prop_broadleaf.3000) + visit + (1|subcompartment),
                       data = noctula, family = binomial, weights=tot_intervals)
 AIC(final_mod3)
 
@@ -340,11 +344,24 @@ final_mod4 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                         scale(per_broadleaf_canopy) + scale(complexity_score) + 
                         scale(canopy_openess) +
                         scale(fallen_deadwood) + scale(dis_to_edge) + 
-                        scale(prop_conifer.1500) + (1|visit) + (1|subcompartment),
+                        scale(prop_conifer.1500) + visit + (1|subcompartment),
                       data = noctula, family = binomial, weights=tot_intervals)
 AIC(final_mod4)
 summary(final_mod4)
 plot(ggpredict(final_mod4, terms = "prop_conifer.1500"))
+
+final_mod5 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
+                            scale(per_broadleaf_canopy) + scale(complexity_score) + 
+                            scale(canopy_openess) +
+                            scale(fallen_deadwood) + scale(dis_to_edge) + 
+                            scale(prop_grassland.1500) + visit + (1|subcompartment),
+                    data = noctula, family = binomial, weights=tot_intervals)
+AIC(final_mod5)
+summary(final_mod5)
+
+# same model selected (grassland 1500m) when visit is random vs fixed 
+# but conifer 1500m also lower - same as before but we picked grassland
+# same significant habitat variables
 
 library(rnrfa)
 library(stringr)
@@ -443,62 +460,64 @@ cor.test(auritus$activity_rate, auritus$per_broadleaf_canopy) # r=0.1783, p=0.25
 cor.test(auritus$activity_rate, auritus$deadwood_snags) # r=0.1122, p=0.47
 ## remove deadwood snags from analysis
 
-tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + (1|subcompartment) + (1|visit),
+tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=auritus)
 summary(tot_act_arable1)
 r.squaredGLMM(tot_act_arable1) # 0.009987801      
-tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + (1|subcompartment) + (1|visit),
+tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=auritus)
 summary(tot_act_arable2) 
 r.squaredGLMM(tot_act_arable2) # 0.0025652355      
-tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + (1|subcompartment) + (1|visit),
+tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=auritus)
 summary(tot_act_arable3)    
 r.squaredGLMM(tot_act_arable3) # 0.0045587240     
 #### ARABLE 500M #### 
 
-tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + (1|subcompartment) + (1|visit),
+tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=auritus)
 summary(tot_act_broad1) 
 r.squaredGLMM(tot_act_broad1) # 0.0047742281       
-tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + (1|subcompartment) + (1|visit),
+tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=auritus)
 summary(tot_act_broad2)
 r.squaredGLMM(tot_act_broad2) # 0.005598168       
-tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + (1|subcompartment) + (1|visit),
+tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=auritus)
 summary(tot_act_broad3) 
 r.squaredGLMM(tot_act_broad3) # 0.010089343      
 #### BROADLEAF 3000M #### 
 
 
-tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + (1|subcompartment) + (1|visit),
+tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=auritus)
 summary(tot_act_conifer1)   
 r.squaredGLMM(tot_act_conifer1) # 0.008230157        
-tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + (1|subcompartment) + (1|visit),
+tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=auritus)
 summary(tot_act_conifer2)       
 r.squaredGLMM(tot_act_conifer2) # 0.000053214210        
-tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + (1|subcompartment) + (1|visit),
+tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=auritus)
 summary(tot_act_conifer3)         
 r.squaredGLMM(tot_act_conifer3) # 0.0000029746877       
 #### CONIFER 500M #### (1500m previously)
 
-tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + (1|subcompartment) + (1|visit),
+tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=auritus)
 summary(tot_act_grass1)        
 r.squaredGLMM(tot_act_grass1) # 0.0015524649         
-tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + (1|subcompartment) + (1|visit),
+tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=auritus)
 summary(tot_act_grass2)                   
 r.squaredGLMM(tot_act_grass2) # 0.00043515734         
-tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + (1|subcompartment) + (1|visit),
+tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=auritus)
 summary(tot_act_grass3)          
 r.squaredGLMM(tot_act_grass3) # 0.006864375        
 #### GRASSLAND 3000M #### (500m previously)
+
+# same buffer sizes selected random vs fixed
 
 # save results
 tot_act_land <- data.frame(response=rep("Plecotus auritus"),
@@ -520,7 +539,7 @@ write.csv(tot_act_land, file="Results/Bats/Plecotus_auritus_land_cover.csv", row
 sp_act_hab <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
-                      scale(fallen_deadwood) + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+                      scale(fallen_deadwood) + scale(dis_to_edge) + visit + (1|subcompartment),
                     data = auritus, family = binomial, weights=tot_intervals)
 summary(sp_act_hab)
 AIC(sp_act_hab)
@@ -529,7 +548,7 @@ final_mod2 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_arable.500) + (1|visit) + (1|subcompartment),
+                      scale(prop_arable.500) + visit + (1|subcompartment),
                     data = auritus, family = binomial, weights=tot_intervals)
 AIC(final_mod2)
 
@@ -537,7 +556,7 @@ final_mod3 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_broadleaf.3000) + (1|visit) + (1|subcompartment),
+                      scale(prop_broadleaf.3000) + visit + (1|subcompartment),
                     data = auritus, family = binomial, weights=tot_intervals)
 AIC(final_mod3)
 summary(final_mod3)
@@ -547,7 +566,7 @@ final_mod4 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) +  
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_conifer.500) + (1|visit) + (1|subcompartment),
+                      scale(prop_conifer.500) + visit + (1|subcompartment),
                     data = auritus, family = binomial, weights=tot_intervals)
 AIC(final_mod4)
 summary(final_mod4)
@@ -557,9 +576,12 @@ final_mod5 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_grassland.3000) + (1|visit) + (1|subcompartment),
+                      scale(prop_grassland.3000) + visit + (1|subcompartment),
                     data = auritus, family = binomial, weights=tot_intervals)
 AIC(final_mod5)
+
+# same model selected random vs fixed (habitat model)
+# same significant habitat variables
 
 ## put all 5 model summaries into one data frame and save
 sp_act_hab_sum <- as.data.frame(coef(summary(sp_act_hab))) #selecting full model coefficient averages
@@ -617,62 +639,64 @@ cor.test(nattereri$activity_rate, nattereri$per_broadleaf_canopy) # r=-0.103, p=
 cor.test(nattereri$activity_rate, nattereri$deadwood_snags) # r=-0.228, p=0.19
 ## remove % broadleaf canopy from analysis
 
-tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + (1|subcompartment) + (1|visit),
+tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=nattereri)
 summary(tot_act_arable1)
 r.squaredGLMM(tot_act_arable1) # 0.0077813497       
-tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + (1|subcompartment) + (1|visit),
+tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=nattereri)
 summary(tot_act_arable2) 
 r.squaredGLMM(tot_act_arable2) # 0.000017139511       
-tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + (1|subcompartment) + (1|visit),
+tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=nattereri)
 summary(tot_act_arable3)    
 r.squaredGLMM(tot_act_arable3) # 0.0026739779      
 #### ARABLE 500M #### (3000m previously)
 
-tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + (1|subcompartment) + (1|visit),
+tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=nattereri)
 summary(tot_act_broad1) 
 r.squaredGLMM(tot_act_broad1) # 0.021919872        
-tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + (1|subcompartment) + (1|visit),
+tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=nattereri)
 summary(tot_act_broad2)
 r.squaredGLMM(tot_act_broad2) # 0.0015728564        
-tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + (1|subcompartment) + (1|visit),
+tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=nattereri)
 summary(tot_act_broad3) 
 r.squaredGLMM(tot_act_broad3) # 0.0013583374       
 #### BROADLEAF 500M #### (1500m previously)
 
 
-tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + (1|subcompartment) + (1|visit),
+tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=nattereri)
 summary(tot_act_conifer1)   
 r.squaredGLMM(tot_act_conifer1) # 0.004733775         
-tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + (1|subcompartment) + (1|visit),
+tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=nattereri)
 summary(tot_act_conifer2)       
 r.squaredGLMM(tot_act_conifer2) # 0.0026404236         
-tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + (1|subcompartment) + (1|visit),
+tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=nattereri)
 summary(tot_act_conifer3)         
 r.squaredGLMM(tot_act_conifer3) # 0.0020950230        
 #### CONIFER 500M #### (1500m previously)
 
-tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + (1|subcompartment) + (1|visit),
+tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=nattereri)
 summary(tot_act_grass1)        
 r.squaredGLMM(tot_act_grass1) # 0.0018574377          
-tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + (1|subcompartment) + (1|visit),
+tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=nattereri)
 summary(tot_act_grass2)                   
 r.squaredGLMM(tot_act_grass2) # 0.000070325546          
-tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + (1|subcompartment) + (1|visit),
+tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=nattereri)
 summary(tot_act_grass3)          
 r.squaredGLMM(tot_act_grass3) # 0.0024899517         
 #### GRASSLAND 3000M #### 
+
+# same buffer sizes selected random vs fixed
 
 # save results
 tot_act_land <- data.frame(response=rep("Myotis nattereri"),
@@ -693,7 +717,7 @@ write.csv(tot_act_land, file="Results/Bats/Myotis_nattereri_land_cover.csv", row
 sp_act_hab <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
-                      scale(fallen_deadwood) + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+                      scale(fallen_deadwood) + scale(dis_to_edge) + visit + (1|subcompartment),
                     data = nattereri, family = binomial, weights=tot_intervals)
 summary(sp_act_hab)
 AIC(sp_act_hab)
@@ -702,7 +726,7 @@ final_mod2 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_arable.500) + (1|visit) + (1|subcompartment),
+                      scale(prop_arable.500) + visit + (1|subcompartment),
                     data = nattereri, family = binomial, weights=tot_intervals)
 AIC(final_mod2)
 
@@ -710,7 +734,7 @@ final_mod3 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_broadleaf.500) + (1|visit) + (1|subcompartment),
+                      scale(prop_broadleaf.500) + visit + (1|subcompartment),
                     data = nattereri, family = binomial, weights=tot_intervals)
 AIC(final_mod3)
 
@@ -718,7 +742,7 @@ final_mod4 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_conifer.500) + (1|visit) + (1|subcompartment),
+                      scale(prop_conifer.500) + visit + (1|subcompartment),
                     data = nattereri, family = binomial, weights=tot_intervals)
 AIC(final_mod4)
 
@@ -726,9 +750,12 @@ final_mod5 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_grassland.3000) + (1|visit) + (1|subcompartment),
+                      scale(prop_grassland.3000) + visit + (1|subcompartment),
                     data = nattereri, family = binomial, weights=tot_intervals)
 AIC(final_mod5)
+
+# same model selected random vs fixed (habitat only)
+# same significant habitat variables (none)
 
 ## check model assumptions
 testDispersion(sp_act_hab) ## no underdispersion (if red line is to the left = underdispersion)
@@ -784,62 +811,64 @@ cor.test(brandtii$activity_rate, brandtii$per_broadleaf_canopy) # r=0.544, p<0.0
 cor.test(brandtii$activity_rate, brandtii$deadwood_snags) # r=0.32, p=0.034
 ## remove deadwood snags from analysis
 
-tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + (1|subcompartment) + (1|visit),
+tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=brandtii)
 summary(tot_act_arable1)
 r.squaredGLMM(tot_act_arable1) # 0.019636323        
-tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + (1|subcompartment) + (1|visit),
+tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=brandtii)
 summary(tot_act_arable2) 
 r.squaredGLMM(tot_act_arable2) # 0.05463143        
-tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + (1|subcompartment) + (1|visit),
+tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=brandtii)
 summary(tot_act_arable3)    
 r.squaredGLMM(tot_act_arable3) # 0.015861915       
 #### ARABLE 1500M #### 
 
-tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + (1|subcompartment) + (1|visit),
+tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=brandtii)
 summary(tot_act_broad1) 
 r.squaredGLMM(tot_act_broad1) # 0.04287694        
-tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + (1|subcompartment) + (1|visit),
+tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=brandtii)
 summary(tot_act_broad2)
 r.squaredGLMM(tot_act_broad2) # 0.04136314         
-tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + (1|subcompartment) + (1|visit),
+tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=brandtii)
 summary(tot_act_broad3) 
 r.squaredGLMM(tot_act_broad3) # 0.05188494        
 #### BROADLEAF 3000M #### (500m previously) 
 
 
-tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + (1|subcompartment) + (1|visit),
+tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=brandtii)
 summary(tot_act_conifer1)   
 r.squaredGLMM(tot_act_conifer1) # 0.05732421          
-tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + (1|subcompartment) + (1|visit),
+tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=brandtii)
 summary(tot_act_conifer2)       
 r.squaredGLMM(tot_act_conifer2) # 0.02754497          
-tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + (1|subcompartment) + (1|visit),
+tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=brandtii)
 summary(tot_act_conifer3)         
 r.squaredGLMM(tot_act_conifer3) # 0.08751967         
 #### CONIFER 3000M #### 
 
-tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + (1|subcompartment) + (1|visit),
+tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=brandtii)
 summary(tot_act_grass1)        
 r.squaredGLMM(tot_act_grass1) # 0.008179273           
-tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + (1|subcompartment) + (1|visit),
+tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=brandtii)
 summary(tot_act_grass2)                   
 r.squaredGLMM(tot_act_grass2) # 0.032429610           
-tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + (1|subcompartment) + (1|visit),
+tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=brandtii)
 summary(tot_act_grass3)          
 r.squaredGLMM(tot_act_grass3) # 0.019279408          
 #### GRASSLAND 1500M #### 
+
+# same buffer sizes selected random vs fixed
 
 # save results
 tot_act_land <- data.frame(response=rep("Myotis mystacinus/brandtii"),
@@ -861,7 +890,7 @@ write.csv(tot_act_land, file="Results/Bats/Myotis_mystacinus_brandtii_land_cover
 sp_act_hab <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
-                      scale(fallen_deadwood) + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+                      scale(fallen_deadwood) + scale(dis_to_edge) + visit + (1|subcompartment),
                     data = brandtii, family = binomial, weights=tot_intervals)
 summary(sp_act_hab)
 AIC(sp_act_hab)
@@ -871,34 +900,17 @@ brandtii_per_broadleaf <- ggplot(pred, aes(x, predicted)) +
         geom_line() +
         geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = .1)+
         geom_point(data=brandtii, aes(x=per_broadleaf_canopy, y=activity_rate))+
-        labs(x="Percentage \nbroadleaf canopy", y="M. mystacinus/brandtii \nactivity rate")+
+        labs(x="Percentage \nbroadleaf canopy", y="M. mystacinus \n/brandtii activity \nrate")+
         #scale_y_continuous(breaks=c(2,4,6,8,10))+
         theme_classic()
 brandtii_per_broadleaf
 ggsave(brandtii_per_broadleaf, file="Graphs/Bats/Brandtii_per_broadleaf.png")
-library(msm)
-output <- coef(summary(sp_act_hab))
-all_spp_r <- data.frame(Startperc = 0, Endperc=100, # start date of model
-                        rate = exp(output["scale(per_broadleaf_canopy)","Estimate"]), # exponential of the broadleaf estimate
-                        rate_SE = 
-                                deltamethod(~exp(x1), 
-                                            output["scale(per_broadleaf_canopy)","Estimate"], 
-                                            output["scale(per_broadleaf_canopy)","Std. Error"]^2, ses=TRUE)) # standard error around exponential of immigrant slope
-
-# Produce confidence intervals for the rate estimates
-setDT(all_spp_r)
-all_spp_r[, rate_lower := rate - 1.96*rate_SE]
-all_spp_r[, rate_upper := rate + 1.96*rate_SE]
-all_spp_r
-
-
-
 
 final_mod2 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_arable.1500) + (1|visit) + (1|subcompartment),
+                      scale(prop_arable.1500) + visit + (1|subcompartment),
                     data = brandtii, family = binomial, weights=tot_intervals)
 AIC(final_mod2)
 
@@ -906,7 +918,7 @@ final_mod3 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_broadleaf.3000) + (1|visit) + (1|subcompartment),
+                      scale(prop_broadleaf.3000) + visit + (1|subcompartment),
                     data = brandtii, family = binomial, weights=tot_intervals)
 AIC(final_mod3)
 
@@ -914,7 +926,7 @@ final_mod4 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_conifer.3000) + (1|visit) + (1|subcompartment),
+                      scale(prop_conifer.3000) + visit + (1|subcompartment),
                     data = brandtii, family = binomial, weights=tot_intervals)
 AIC(final_mod4)
 
@@ -922,9 +934,12 @@ final_mod5 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_grassland.1500) + (1|visit) + (1|subcompartment),
+                      scale(prop_grassland.1500) + visit + (1|subcompartment),
                     data = brandtii, family = binomial, weights=tot_intervals)
 AIC(final_mod5)
+
+# same model selected (habitat only) random vs fixed
+# same significant habitat variables
 
 ## check model assumptions
 testDispersion(sp_act_hab) ## no underdispersion (if red line is to the left = underdispersion)
@@ -980,62 +995,64 @@ cor.test(pipistrellus$activity_rate, pipistrellus$per_broadleaf_canopy)
 cor.test(pipistrellus$activity_rate, pipistrellus$deadwood_snags) 
 ## remove % broadleaf canopy from analysis
 
-tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + (1|subcompartment) + (1|visit),
+tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=pipistrellus)
 summary(tot_act_arable1)
 r.squaredGLMM(tot_act_arable1) # 0.0011111648         
-tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + (1|subcompartment) + (1|visit),
+tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=pipistrellus)
 summary(tot_act_arable2) 
 r.squaredGLMM(tot_act_arable2) # 0.03751759         
-tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + (1|subcompartment) + (1|visit),
+tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=pipistrellus)
 summary(tot_act_arable3)    
 r.squaredGLMM(tot_act_arable3) # 0.00002733767        
 #### ARABLE 1500M #### 
 
-tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + (1|subcompartment) + (1|visit),
+tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=pipistrellus)
 summary(tot_act_broad1) 
 r.squaredGLMM(tot_act_broad1) # 0.013676790         
-tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + (1|subcompartment) + (1|visit),
+tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=pipistrellus)
 summary(tot_act_broad2)
 r.squaredGLMM(tot_act_broad2) # 0.009447555          
-tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + (1|subcompartment) + (1|visit),
+tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=pipistrellus)
 summary(tot_act_broad3) 
 r.squaredGLMM(tot_act_broad3) # 0.03349531         
 #### BROADLEAF 3000M #### (500m previously)
 
 
-tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + (1|subcompartment) + (1|visit),
+tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=pipistrellus)
 summary(tot_act_conifer1)   
 r.squaredGLMM(tot_act_conifer1) # 0.002556930           
-tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + (1|subcompartment) + (1|visit),
+tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=pipistrellus)
 summary(tot_act_conifer2)       
 r.squaredGLMM(tot_act_conifer2) # 0.03242995          
-tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + (1|subcompartment) + (1|visit),
+tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=pipistrellus)
 summary(tot_act_conifer3)         
 r.squaredGLMM(tot_act_conifer3) # 0.0013140366          
 #### CONIFER 1500M #### 
 
-tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + (1|subcompartment) + (1|visit),
+tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=pipistrellus)
 summary(tot_act_grass1)        
 r.squaredGLMM(tot_act_grass1) # 0.03542227            
-tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + (1|subcompartment) + (1|visit),
+tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=pipistrellus)
 summary(tot_act_grass2)                   
 r.squaredGLMM(tot_act_grass2) # 0.04571914            
-tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + (1|subcompartment) + (1|visit),
+tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=pipistrellus)
 summary(tot_act_grass3)          
 r.squaredGLMM(tot_act_grass3) # 0.006147952           
 #### GRASSLAND 1500M #### 
+
+# same buffer sizes selected random vs fixed 
 
 # save results
 tot_act_land <- data.frame(response=rep("Pipistrellus pipistrellus"),
@@ -1056,7 +1073,7 @@ write.csv(tot_act_land, file="Results/Bats/Pipistrellus_pipistrellus_land_cover.
 sp_act_hab <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
-                      scale(fallen_deadwood) + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+                      scale(fallen_deadwood) + scale(dis_to_edge) + visit + (1|subcompartment),
                     data = pipistrellus, family = binomial, weights=tot_intervals)
 summary(sp_act_hab)
 AIC(sp_act_hab)
@@ -1065,7 +1082,7 @@ final_mod2 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_arable.1500) + (1|visit) + (1|subcompartment),
+                      scale(prop_arable.1500) + visit + (1|subcompartment),
                     data = pipistrellus, family = binomial, weights=tot_intervals)
 AIC(final_mod2)
 
@@ -1073,35 +1090,67 @@ final_mod3 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_broadleaf.3000) + (1|visit) + (1|subcompartment),
+                      scale(prop_broadleaf.3000) + visit + (1|subcompartment),
                     data = pipistrellus, family = binomial, weights=tot_intervals)
 AIC(final_mod3)
+summary(final_mod3)
 
 final_mod4 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_conifer.1500) + (1|visit) + (1|subcompartment),
+                      scale(prop_conifer.1500) + visit + (1|subcompartment),
                     data = pipistrellus, family = binomial, weights=tot_intervals)
 AIC(final_mod4)
 summary(final_mod4)
 plot(ggpredict(final_mod4, terms = "prop_conifer.1500"))
 
-pred <- ggpredict(final_mod4, terms = "prop_conifer.1500 [all]")
-pipistrellus_conifer <- ggplot(pred, aes(x, predicted)) +
-        geom_line(linetype="dashed") +
+pred <- ggpredict(final_mod3, terms = "canopy_openess [all]")
+pipistrellus_openness <- ggplot(pred, aes(x, predicted)) +
+        geom_line() +
         geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = .1)+
-        geom_point(data=pipistrellus, aes(x=prop_conifer.1500, y=activity_rate))+
-        labs(x="Proportion of conifer within 1500m", y="P. pipistrellus \nactivity rate")+
+        geom_point(data=pipistrellus, aes(x=canopy_openess, y=activity_rate))+
+        labs(x="Canopy openness", y="P. pipistrellus \nactivity rate")+
         theme_classic()
-pipistrellus_conifer
-ggsave(pipistrellus_conifer, file="Graphs/Bats/Pipistrellus_conifer_1500m.png")
+pipistrellus_openness
+ggsave(pipistrellus_openness, file="Graphs/Bats/Pipistrellus_canopy_openness.png")
+
+pred <- ggpredict(final_mod3, terms = "deadwood_snags [all]")
+pipistrellus_snags <- ggplot(pred, aes(x, predicted)) +
+        geom_line() +
+        geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = .1)+
+        geom_point(data=pipistrellus, aes(x=deadwood_snags, y=activity_rate))+
+        labs(x="Deadwood snags", y="P. pipistrellus \nactivity rate")+
+        theme_classic()
+pipistrellus_snags
+ggsave(pipistrellus_snags, file="Graphs/Bats/Pipistrellus_deadwood_snags.png")
+
+pred <- ggpredict(final_mod3, terms = "fallen_deadwood [all]")
+pipistrellus_fallen <- ggplot(pred, aes(x, predicted)) +
+        geom_line() +
+        geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = .1)+
+        geom_point(data=pipistrellus, aes(x=fallen_deadwood, y=activity_rate))+
+        labs(x="Fallen deadwood", y="P. pipistrellus \nactivity rate")+
+        theme_classic()
+pipistrellus_fallen
+ggsave(pipistrellus_fallen, file="Graphs/Bats/Pipistrellus_fallen_deadwood.png")
+
+pred <- ggpredict(final_mod3, terms = "complexity_score [all]")
+pipistrellus_complex <- ggplot(pred, aes(x, predicted)) +
+        geom_line() +
+        geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = .1)+
+        geom_point(data=pipistrellus, aes(x=complexity_score, y=activity_rate))+
+        labs(x="Complexity score", y="P. pipistrellus \nactivity rate")+
+        theme_classic()
+pipistrellus_complex
+ggsave(pipistrellus_complex, file="Graphs/Bats/Pipistrellus_complexity_score.png")
+
 
 final_mod5 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_grassland.1500) + (1|visit) + (1|subcompartment),
+                      scale(prop_grassland.1500) + visit + (1|subcompartment),
                     data = pipistrellus, family = binomial, weights=tot_intervals)
 AIC(final_mod5)
 
@@ -1159,62 +1208,64 @@ cor.test(pygmaeus$activity_rate, pygmaeus$per_broadleaf_canopy) # r=0.3384, p=0.
 cor.test(pygmaeus$activity_rate, pygmaeus$deadwood_snags) # r=0.433, p<0.001
 ## remove % broadleaf canopy from analysis
 
-tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + (1|subcompartment) + (1|visit),
+tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=pygmaeus)
 summary(tot_act_arable1)
 r.squaredGLMM(tot_act_arable1) # 0.003162026          
-tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + (1|subcompartment) + (1|visit),
+tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=pygmaeus)
 summary(tot_act_arable2) 
 r.squaredGLMM(tot_act_arable2) # 0.00008031302          
-tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + (1|subcompartment) + (1|visit),
+tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=pygmaeus)
 summary(tot_act_arable3)    
 r.squaredGLMM(tot_act_arable3) # 0.009573085        
 #### ARABLE 3000M #### (500m previously) 
 
-tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + (1|subcompartment) + (1|visit),
+tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=pygmaeus)
 summary(tot_act_broad1) 
 r.squaredGLMM(tot_act_broad1) # 0.01997744          
-tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + (1|subcompartment) + (1|visit),
+tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=pygmaeus)
 summary(tot_act_broad2)
 r.squaredGLMM(tot_act_broad2) # 0.013685592           
-tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + (1|subcompartment) + (1|visit),
+tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=pygmaeus)
 summary(tot_act_broad3) 
 r.squaredGLMM(tot_act_broad3) # 0.013702968          
 #### BROADLEAF 500M #### 
 
 
-tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + (1|subcompartment) + (1|visit),
+tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=pygmaeus)
 summary(tot_act_conifer1)   
 r.squaredGLMM(tot_act_conifer1) # 0.002969737            
-tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + (1|subcompartment) + (1|visit),
+tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=pygmaeus)
 summary(tot_act_conifer2)       
 r.squaredGLMM(tot_act_conifer2) # 0.004672719           
-tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + (1|subcompartment) + (1|visit),
+tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=pygmaeus)
 summary(tot_act_conifer3)         
 r.squaredGLMM(tot_act_conifer3) # 0.007447870           
 #### CONIFER 3000M #### (500m previously)
 
-tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + (1|subcompartment) + (1|visit),
+tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=pygmaeus)
 summary(tot_act_grass1)        
 r.squaredGLMM(tot_act_grass1) # 0.05533833             
-tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + (1|subcompartment) + (1|visit),
+tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=pygmaeus)
 summary(tot_act_grass2)                   
 r.squaredGLMM(tot_act_grass2) # 0.00019908973             
-tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + (1|subcompartment) + (1|visit),
+tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=pygmaeus)
 summary(tot_act_grass3)          
 r.squaredGLMM(tot_act_grass3) # 0.016515591            
 #### GRASSLAND 500M #### 
+
+# same buffer sizes selected random vs fixed
 
 # save results
 tot_act_land <- data.frame(response=rep("Pipistrellus pygmaeus"),
@@ -1236,7 +1287,7 @@ write.csv(tot_act_land, file="Results/Bats/Pipistrellus_pygmaeus_land_cover.csv"
 sp_act_hab <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
-                      scale(fallen_deadwood) + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+                      scale(fallen_deadwood) + scale(dis_to_edge) + visit + (1|subcompartment),
                     data = pygmaeus, family = binomial, weights=tot_intervals)
 summary(sp_act_hab)
 AIC(sp_act_hab)
@@ -1245,7 +1296,7 @@ final_mod2 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_arable.3000) + (1|visit) + (1|subcompartment),
+                      scale(prop_arable.3000) + visit + (1|subcompartment),
                     data = pygmaeus, family = binomial, weights=tot_intervals)
 AIC(final_mod2)
 
@@ -1253,7 +1304,7 @@ final_mod3 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_broadleaf.500) + (1|visit) + (1|subcompartment),
+                      scale(prop_broadleaf.500) + visit + (1|subcompartment),
                     data = pygmaeus, family = binomial, weights=tot_intervals)
 AIC(final_mod3)
 summary(final_mod3)
@@ -1273,7 +1324,7 @@ final_mod4 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_conifer.3000) + (1|visit) + (1|subcompartment),
+                      scale(prop_conifer.3000) + visit + (1|subcompartment),
                     data = pygmaeus, family = binomial, weights=tot_intervals)
 AIC(final_mod4)
 
@@ -1281,21 +1332,53 @@ final_mod5 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_grassland.500) + (1|visit) + (1|subcompartment),
+                      scale(prop_grassland.500) + visit + (1|subcompartment),
                     data = pygmaeus, family = binomial, weights=tot_intervals)
 AIC(final_mod5)
 summary(final_mod5)
-plot(ggpredict(final_mod5, terms = "prop_grassland.500"))
 
-pred <- ggpredict(final_mod5, terms = "prop_grassland.500 [all]")
-pygmaeus_grass <- ggplot(pred, aes(x, predicted)) +
+pred <- ggpredict(final_mod5, terms = "dbh_average [all]")
+pygmaeus_dbh <- ggplot(pred, aes(x, predicted)) +
         geom_line() +
         geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = .1)+
-        geom_point(data=pygmaeus, aes(x=prop_grassland.500, y=activity_rate))+
-        labs(x="Proportion of semi-natural \ngrassland within 500m", y="P. pygmaeus \nactivity rate")+
+        geom_point(data=pygmaeus, aes(x=dbh_average, y=activity_rate))+
+        labs(x="Mean DBH", y="P. pygmaeus \nactivity rate")+
         theme_classic()
-pygmaeus_grass
-ggsave(pygmaeus_grass, file="Graphs/Bats/Pygmaeus_grassland_500m.png")
+pygmaeus_dbh
+ggsave(pygmaeus_dbh, file="Graphs/Bats/Pygmaeus_mean_dbh.png")
+
+pred <- ggpredict(final_mod5, terms = "canopy_openess [all]")
+pygmaeus_open <- ggplot(pred, aes(x, predicted)) +
+        geom_line() +
+        geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = .1)+
+        geom_point(data=pygmaeus, aes(x=canopy_openess, y=activity_rate))+
+        labs(x="Canopy openness", y="P. pygmaeus \nactivity rate")+
+        theme_classic()
+pygmaeus_open
+ggsave(pygmaeus_open, file="Graphs/Bats/Pygmaeus_canopy_openness.png")
+
+pred <- ggpredict(final_mod5, terms = "deadwood_snags [all]")
+pygmaeus_snags <- ggplot(pred, aes(x, predicted)) +
+        geom_line() +
+        geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = .1)+
+        geom_point(data=pygmaeus, aes(x=deadwood_snags, y=activity_rate))+
+        labs(x="Deadwood snags", y="P. pygmaeus \nactivity rate")+
+        theme_classic()
+pygmaeus_snags
+ggsave(pygmaeus_snags, file="Graphs/Bats/Pygmaeus_deadwood_snags.png")
+
+pred <- ggpredict(final_mod5, terms = "fallen_deadwood [all]")
+pygmaeus_fallen <- ggplot(pred, aes(x, predicted)) +
+        geom_line() +
+        geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = .1)+
+        geom_point(data=pygmaeus, aes(x=fallen_deadwood, y=activity_rate))+
+        labs(x="Fallen deadwood", y="P. pygmaeus \nactivity rate")+
+        theme_classic()
+pygmaeus_fallen
+ggsave(pygmaeus_fallen, file="Graphs/Bats/Pygmaeus_mean_fallen_deadwood.png")
+
+# same model selected (grassland) random vs fixed
+# same habitat variables significant 
 
 ## check model assumptions
 testDispersion(sp_act_hab) ## no underdispersion (if red line is to the left = underdispersion)
@@ -1351,58 +1434,59 @@ cor.test(barbastellus$activity_rate, barbastellus$per_broadleaf_canopy)
 cor.test(barbastellus$activity_rate, barbastellus$deadwood_snags) 
 ## remove % broadleaf canopy from analysis
 
-tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + (1|subcompartment) + (1|visit),
+tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=barbastellus)
 summary(tot_act_arable1)
 r.squaredGLMM(tot_act_arable1) # 0.00039527800           
-tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + (1|subcompartment) + (1|visit),
+tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=barbastellus)
 summary(tot_act_arable2) 
 r.squaredGLMM(tot_act_arable2) # 0.006048960           
-tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + (1|subcompartment) + (1|visit),
+tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=barbastellus)
 summary(tot_act_arable3)    
 r.squaredGLMM(tot_act_arable3) # 0.0017600405         
 #### ARABLE 3000M #### (500m previously)
+# 1500m with visit as fixed effect
 
-tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + (1|subcompartment) + (1|visit),
+tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=barbastellus)
 summary(tot_act_broad1) 
 r.squaredGLMM(tot_act_broad1) # 0.017485263           
-tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + (1|subcompartment) + (1|visit),
+tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=barbastellus)
 summary(tot_act_broad2)
 r.squaredGLMM(tot_act_broad2) # 0.002081460            
-tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + (1|subcompartment) + (1|visit),
+tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=barbastellus)
 summary(tot_act_broad3) 
 r.squaredGLMM(tot_act_broad3) # 0.0020257022           
 #### BROADLEAF 500M #### 
 
 
-tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + (1|subcompartment) + (1|visit),
+tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=barbastellus)
 summary(tot_act_conifer1)   
 r.squaredGLMM(tot_act_conifer1) # 0.033629389             
-tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + (1|subcompartment) + (1|visit),
+tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=barbastellus)
 summary(tot_act_conifer2)       
 r.squaredGLMM(tot_act_conifer2) # 0.006865320            
-tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + (1|subcompartment) + (1|visit),
+tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=barbastellus)
 summary(tot_act_conifer3)         
 r.squaredGLMM(tot_act_conifer3) # 0.0025175748            
 #### CONIFER 500M #### 
 
-tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + (1|subcompartment) + (1|visit),
+tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=barbastellus)
 summary(tot_act_grass1)        
 r.squaredGLMM(tot_act_grass1) # 0.0013298201              
-tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + (1|subcompartment) + (1|visit),
+tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=barbastellus)
 summary(tot_act_grass2)                   
 r.squaredGLMM(tot_act_grass2) # 0.034135776              
-tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + (1|subcompartment) + (1|visit),
+tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=barbastellus)
 summary(tot_act_grass3)          
 r.squaredGLMM(tot_act_grass3) # 0.000014157098             
@@ -1428,7 +1512,7 @@ write.csv(tot_act_land, file="Results/Bats/Barbastella_barbastellus_land_cover.c
 sp_act_hab <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
-                      scale(fallen_deadwood) + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+                      scale(fallen_deadwood) + scale(dis_to_edge) + visit + (1|subcompartment),
                     data = barbastellus, family = binomial, weights=tot_intervals)
 summary(sp_act_hab)
 AIC(sp_act_hab)
@@ -1437,7 +1521,7 @@ final_mod2 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_arable.3000) + (1|visit) + (1|subcompartment),
+                      scale(prop_arable.1500) + visit + (1|subcompartment),
                     data = barbastellus, family = binomial, weights=tot_intervals)
 AIC(final_mod2)
 
@@ -1445,7 +1529,7 @@ final_mod3 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_broadleaf.500) + (1|visit) + (1|subcompartment),
+                      scale(prop_broadleaf.500) + visit + (1|subcompartment),
                     data = barbastellus, family = binomial, weights=tot_intervals)
 AIC(final_mod3)
 
@@ -1453,7 +1537,7 @@ final_mod4 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_conifer.500) + (1|visit) + (1|subcompartment),
+                      scale(prop_conifer.500) + visit + (1|subcompartment),
                     data = barbastellus, family = binomial, weights=tot_intervals)
 AIC(final_mod4)
 summary(final_mod4)
@@ -1473,9 +1557,13 @@ final_mod5 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(complexity_score) + 
                       scale(canopy_openess) + scale(deadwood_snags) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_grassland.1500) + (1|visit) + (1|subcompartment),
+                      scale(prop_grassland.1500) + visit + (1|subcompartment),
                     data = barbastellus, family = binomial, weights=tot_intervals)
 AIC(final_mod5)
+
+# same model selected (conifer) random vs fixed
+# only change was from 3000 to 1500m buffer for arable
+# same habitat variables significant (none)
 
 ## check model assumptions
 testDispersion(sp_act_hab) ## no underdispersion (if red line is to the left = underdispersion)
@@ -1531,62 +1619,64 @@ cor.test(serotinus$activity_rate, serotinus$per_broadleaf_canopy)
 cor.test(serotinus$activity_rate, serotinus$deadwood_snags) 
 ## remove deadwood snags from analysis
 
-tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + (1|subcompartment) + (1|visit),
+tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=serotinus)
 summary(tot_act_arable1)
 r.squaredGLMM(tot_act_arable1) # 0.0038962118            
-tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + (1|subcompartment) + (1|visit),
+tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=serotinus)
 summary(tot_act_arable2) 
 r.squaredGLMM(tot_act_arable2) # 0.031369852            
-tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + (1|subcompartment) + (1|visit),
+tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=serotinus)
 summary(tot_act_arable3)    
 r.squaredGLMM(tot_act_arable3) # 0.017357811          
 #### ARABLE 1500M #### 
 
-tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + (1|subcompartment) + (1|visit),
+tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=serotinus)
 summary(tot_act_broad1) 
 r.squaredGLMM(tot_act_broad1) # 0.001260761            
-tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + (1|subcompartment) + (1|visit),
+tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=serotinus)
 summary(tot_act_broad2)
 r.squaredGLMM(tot_act_broad2) # 0.022914050             
-tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + (1|subcompartment) + (1|visit),
+tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=serotinus)
 summary(tot_act_broad3) 
 r.squaredGLMM(tot_act_broad3) # 0.019462188            
 #### BROADLEAF 1500M #### 
 
 
-tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + (1|subcompartment) + (1|visit),
+tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=serotinus)
 summary(tot_act_conifer1)   
 r.squaredGLMM(tot_act_conifer1) # 0.018724410              
-tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + (1|subcompartment) + (1|visit),
+tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=serotinus)
 summary(tot_act_conifer2)       
 r.squaredGLMM(tot_act_conifer2) # 0.024735391             
-tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + (1|subcompartment) + (1|visit),
+tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=serotinus)
 summary(tot_act_conifer3)         
 r.squaredGLMM(tot_act_conifer3) # 0.000025387304             
 #### CONIFER 1500M #### (500m previously)
 
-tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + (1|subcompartment) + (1|visit),
+tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=serotinus)
 summary(tot_act_grass1)        
 r.squaredGLMM(tot_act_grass1) # 0.0059950774               
-tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + (1|subcompartment) + (1|visit),
+tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=serotinus)
 summary(tot_act_grass2)                   
 r.squaredGLMM(tot_act_grass2) # 0.0009307332               
-tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + (1|subcompartment) + (1|visit),
+tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=serotinus)
 summary(tot_act_grass3)          
 r.squaredGLMM(tot_act_grass3) # 0.0078805492              
 #### GRASSLAND 3000M #### 
+
+# same buffer sizes selected random vs fixed
 
 # save results
 tot_act_land <- data.frame(response=rep("Eptesicus serotinus"),
@@ -1607,7 +1697,7 @@ write.csv(tot_act_land, file="Results/Bats/Eptesicus_serotinus_land_cover.csv", 
 sp_act_hab <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
-                      scale(fallen_deadwood) + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+                      scale(fallen_deadwood) + scale(dis_to_edge) + visit + (1|subcompartment),
                     data = serotinus, family = binomial, weights=tot_intervals)
 summary(sp_act_hab)
 AIC(sp_act_hab)
@@ -1616,7 +1706,7 @@ final_mod2 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_arable.1500) + (1|visit) + (1|subcompartment),
+                      scale(prop_arable.1500) + visit + (1|subcompartment),
                     data = serotinus, family = binomial, weights=tot_intervals)
 AIC(final_mod2)
 
@@ -1624,7 +1714,7 @@ final_mod3 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_broadleaf.1500) + (1|visit) + (1|subcompartment),
+                      scale(prop_broadleaf.1500) + visit + (1|subcompartment),
                     data = serotinus, family = binomial, weights=tot_intervals)
 AIC(final_mod3)
 
@@ -1632,7 +1722,7 @@ final_mod4 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_conifer.1500) + (1|visit) + (1|subcompartment),
+                      scale(prop_conifer.1500) + visit + (1|subcompartment),
                     data = serotinus, family = binomial, weights=tot_intervals)
 AIC(final_mod4)
 
@@ -1640,9 +1730,12 @@ final_mod5 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_grassland.3000) + (1|visit) + (1|subcompartment),
+                      scale(prop_grassland.3000) + visit + (1|subcompartment),
                     data = serotinus, family = binomial, weights=tot_intervals)
 AIC(final_mod5)
+
+# same model selected (habitat only) 
+# same habitat variables significant (none)
 
 ## check model assumptions
 testDispersion(sp_act_hab) ## no underdispersion (if red line is to the left = underdispersion)
@@ -1699,62 +1792,64 @@ cor.test(daubentonii$activity_rate, daubentonii$per_broadleaf_canopy)
 cor.test(daubentonii$activity_rate, daubentonii$deadwood_snags) 
 ## remove deadwood snags from analysis
 
-tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + (1|subcompartment) + (1|visit),
+tot_act_arable1 <- glmer(activity_rate ~ prop_arable.500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=daubentonii)
 summary(tot_act_arable1)
 r.squaredGLMM(tot_act_arable1) # 0.001527346             
-tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + (1|subcompartment) + (1|visit),
+tot_act_arable2 <- glmer(activity_rate ~ prop_arable.1500 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=daubentonii)
 summary(tot_act_arable2) 
 r.squaredGLMM(tot_act_arable2) # 0.009789410             
-tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + (1|subcompartment) + (1|visit),
+tot_act_arable3 <- glmer(activity_rate ~ prop_arable.3000 + visit + (1|subcompartment),
                          family=binomial, weights=tot_intervals, data=daubentonii)
 summary(tot_act_arable3)    
 r.squaredGLMM(tot_act_arable3) # 0.019141925           
 #### ARABLE 3000M #### 
 
-tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + (1|subcompartment) + (1|visit),
+tot_act_broad1 <- glmer(activity_rate ~ prop_broadleaf.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=daubentonii)
 summary(tot_act_broad1) 
 r.squaredGLMM(tot_act_broad1) # 0.0026634222             
-tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + (1|subcompartment) + (1|visit),
+tot_act_broad2 <- glmer(activity_rate ~ prop_broadleaf.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=daubentonii)
 summary(tot_act_broad2)
 r.squaredGLMM(tot_act_broad2) # 0.00027003019              
-tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + (1|subcompartment) + (1|visit),
+tot_act_broad3 <- glmer(activity_rate ~ prop_broadleaf.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=daubentonii)
 summary(tot_act_broad3) 
 r.squaredGLMM(tot_act_broad3) # 0.00048121014             
 #### BROADLEAF 500M #### (1500m previously)
 
 
-tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + (1|subcompartment) + (1|visit),
+tot_act_conifer1 <- glmer(activity_rate ~ prop_conifer.500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=daubentonii)
 summary(tot_act_conifer1)   
 r.squaredGLMM(tot_act_conifer1) # 0.022854302               
-tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + (1|subcompartment) + (1|visit),
+tot_act_conifer2 <- glmer(activity_rate ~ prop_conifer.1500 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=daubentonii)
 summary(tot_act_conifer2)       
 r.squaredGLMM(tot_act_conifer2) # 0.047190872              
-tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + (1|subcompartment) + (1|visit),
+tot_act_conifer3 <- glmer(activity_rate ~ prop_conifer.3000 + visit + (1|subcompartment),
                           family=binomial, weights=tot_intervals, data=daubentonii)
 summary(tot_act_conifer3)         
 r.squaredGLMM(tot_act_conifer3) # 0.018337843              
 #### CONIFER 1500M #### 
 
-tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + (1|subcompartment) + (1|visit),
+tot_act_grass1 <- glmer(activity_rate ~ prop_grassland.500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=daubentonii)
 summary(tot_act_grass1)        
 r.squaredGLMM(tot_act_grass1) # 0.032421360                
-tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + (1|subcompartment) + (1|visit),
+tot_act_grass2 <- glmer(activity_rate ~ prop_grassland.1500 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=daubentonii)
 summary(tot_act_grass2)                   
 r.squaredGLMM(tot_act_grass2) # 0.0063150656                
-tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + (1|subcompartment) + (1|visit),
+tot_act_grass3 <- glmer(activity_rate ~ prop_grassland.3000 + visit + (1|subcompartment),
                         family=binomial, weights=tot_intervals, data=daubentonii)
 summary(tot_act_grass3)          
 r.squaredGLMM(tot_act_grass3) # 0.014684258               
 #### GRASSLAND 500M #### (3000m previously)
+
+# same buffer sizes selected random vs fixed
 
 # save results
 tot_act_land <- data.frame(response=rep("Myotis daubentonii"),
@@ -1775,7 +1870,7 @@ write.csv(tot_act_land, file="Results/Bats/Myotis_daubentonii_land_cover.csv", r
 sp_act_hab <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
-                      scale(fallen_deadwood) + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+                      scale(fallen_deadwood) + scale(dis_to_edge) + visit + (1|subcompartment),
                     data = daubentonii, family = binomial, weights=tot_intervals)
 summary(sp_act_hab)
 AIC(sp_act_hab)
@@ -1784,7 +1879,7 @@ final_mod2 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_arable.3000) + (1|visit) + (1|subcompartment),
+                      scale(prop_arable.3000) + visit + (1|subcompartment),
                     data = daubentonii, family = binomial, weights=tot_intervals)
 AIC(final_mod2)
 
@@ -1792,7 +1887,7 @@ final_mod3 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_broadleaf.500) + (1|visit) + (1|subcompartment),
+                      scale(prop_broadleaf.500) + visit + (1|subcompartment),
                     data = daubentonii, family = binomial, weights=tot_intervals)
 AIC(final_mod3)
 
@@ -1800,7 +1895,7 @@ final_mod4 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_conifer.1500) + (1|visit) + (1|subcompartment),
+                      scale(prop_conifer.1500) + visit + (1|subcompartment),
                     data = daubentonii, family = binomial, weights=tot_intervals)
 AIC(final_mod4)
 summary(final_mod4)
@@ -1820,9 +1915,12 @@ final_mod5 <- glmer(activity_rate ~ scale(dbh_average) + scale(basal_area) +
                       scale(per_broadleaf_canopy) + scale(complexity_score) + 
                       scale(canopy_openess) + 
                       scale(fallen_deadwood) + scale(dis_to_edge) + 
-                      scale(prop_grassland.500) + (1|visit) + (1|subcompartment),
+                      scale(prop_grassland.500) + visit + (1|subcompartment),
                     data = daubentonii, family = binomial, weights=tot_intervals)
 AIC(final_mod5)
+
+# same model selected (conifer)
+# same significant habitat variables (none)
 
 ## check model assumptions
 testDispersion(sp_act_hab) ## no underdispersion (if red line is to the left = underdispersion)
@@ -1866,8 +1964,15 @@ sp_act_hab_mods <- rbind(sp_act_hab_sum, final_mod2_sum, final_mod3_sum, final_m
 write.csv(sp_act_hab_mods, file="Results/Bats/Myotis_daubentonii_habitat.csv", row.names=FALSE)
 
 
+### Put significant habitat variable graphs together
 
+library(ggpubr)
 
+hab_vars <- ggarrange(brandtii_per_broadleaf, pipistrellus_openness, pipistrellus_complex, pipistrellus_snags, pipistrellus_fallen,
+                         pygmaeus_dbh, pygmaeus_open, pygmaeus_snags, pygmaeus_fallen, richness_dbh, labels=c("(a)", 
+                         "(b)", "(c)", "(d)", "(e)", "(f)", "(g)", "(h)", "(i)", "(j)"), nrow=5, ncol=2)
+hab_vars
+ggsave(hab_vars, file="Graphs/Bats/Habitat_variables_all.png", height=11, width=7)
 
 ###################### Graphs
 

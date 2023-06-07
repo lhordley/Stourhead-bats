@@ -42,12 +42,13 @@ poisson <- fitdistr(bat_rich$richness, "Poisson")
 car::qqp(bat_rich$richness, "pois", lambda=poisson$estimate)
 
 #  Try Poisson
-richness_mod <- glmer(richness ~ treatment + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+richness_mod <- glmer(richness ~ treatment + scale(dis_to_edge) + visit + (1|subcompartment),
                       data = bat_rich,
                       family = poisson(),
                       na.action = "na.fail")
 ## singular fit errors from both random effects - not enough variation in subcompartment or visit
 summary(richness_mod)
+
 ## min temp, cloud cover (both positive), moon cycle, and both distances (negative) significant
 ## find R2 values
 library(MuMIn)
@@ -91,7 +92,8 @@ library(COMPoissonReg)
 library (tibble)
 bat_rich <-as_tibble (bat_rich)%>%
   mutate (treatment = factor (treatment)) ## change treatment to factor
-richness_mod2 <- glmmTMB(richness ~ treatment + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+
+richness_mod2 <- glmmTMB(richness ~ treatment + scale(dis_to_edge) + visit + (1|subcompartment),
                          data = bat_rich,
                          family = genpois(link="log"),
                          na.action = "na.fail")
@@ -106,7 +108,7 @@ qqline(resid(richness_mod2))
 
 # Pairwise differences in management effects
 glht1 <- glht(richness_mod2, mcp(treatment="Tukey"))
-summary(glht1) ## non are significant 
+summary(glht1) ## none are significant 
 
 library(broom)
 CI <- summary(glht1)
@@ -152,7 +154,7 @@ rich_treatment2
 # Binomial model
 noctula <- bat_act[bat_act$scientific_name=="Nyctalus noctula",]
 tot_intervals <- noctula$tot_intervals
-noctula_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+noctula_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + visit + (1|subcompartment),
                      data = noctula,
                      family=binomial, weights=tot_intervals, na.action = "na.fail")
 ## no errors
@@ -196,7 +198,7 @@ noctula_treatment
 # Binomial model
 auritus <- bat_act[bat_act$scientific_name=="Plecotus auritus",]
 tot_intervals <- auritus$tot_intervals
-auritus_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+auritus_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + visit + (1|subcompartment),
                      data = auritus, family=binomial, weights=tot_intervals, na.action = "na.fail")
 ## no errors
 summary(auritus_mod)
@@ -239,7 +241,7 @@ auritus_treatment
 # Binomial model
 nattereri <- bat_act[bat_act$scientific_name=="Myotis nattereri",]
 tot_intervals <- nattereri$tot_intervals
-nattereri_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+nattereri_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + visit + (1|subcompartment),
                        data = nattereri, family=binomial, weights=tot_intervals, 
                        na.action = "na.fail")
 ## singular fit warning
@@ -282,7 +284,7 @@ nattereri_treatment
 # Binomial model
 brandtii <- bat_act[bat_act$scientific_name=="Myotis mystacinus/brandtii",]
 tot_intervals <- brandtii$tot_intervals
-brandtii_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+brandtii_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + visit + (1|subcompartment),
                       data = brandtii, family=binomial, weights=tot_intervals, 
                       na.action = "na.fail")
 ## no errors
@@ -327,7 +329,7 @@ brandtii_treatment
 # Binomial model
 pipistrellus <- bat_act[bat_act$scientific_name=="Pipistrellus pipistrellus",]
 tot_intervals <- pipistrellus$tot_intervals
-pipistrellus_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+pipistrellus_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + visit + (1|subcompartment),
                           data = pipistrellus, family=binomial, weights=tot_intervals, 
                           na.action = "na.fail")
 ## no errors
@@ -374,7 +376,7 @@ pipistrellus_treatment
 # Binomial model
 pygmaeus <- bat_act[bat_act$scientific_name=="Pipistrellus pygmaeus",]
 tot_intervals <- pygmaeus$tot_intervals
-pygmaeus_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+pygmaeus_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + visit + (1|subcompartment),
                       data = pygmaeus, family=binomial, weights=tot_intervals, 
                       na.action = "na.fail")
 ## no errors
@@ -421,7 +423,7 @@ pygmaeus_treatment
 # Binomial model
 barbastellus <- bat_act[bat_act$scientific_name=="Barbastella barbastellus",]
 tot_intervals <- barbastellus$tot_intervals
-barbastellus_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+barbastellus_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + visit + (1|subcompartment),
                           data = barbastellus, family=binomial, weights=tot_intervals, 
                           na.action = "na.fail")
 ## singular fit warning
@@ -464,7 +466,7 @@ barbastellus_treatment
 # Binomial model
 serotinus <- bat_act[bat_act$scientific_name=="Eptesicus serotinus",]
 tot_intervals <- serotinus$tot_intervals
-serotinus_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+serotinus_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + visit + (1|subcompartment),
                        data = serotinus, family=binomial, weights=tot_intervals, 
                        na.action = "na.fail")
 ## no errors
@@ -508,7 +510,7 @@ serotinus_treatment
 # Binomial model
 daubentonii <- bat_act[bat_act$scientific_name=="Myotis daubentonii",]
 tot_intervals <- daubentonii$tot_intervals
-daubentonii_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + (1|visit) + (1|subcompartment),
+daubentonii_mod <- glmer(activity_rate ~ treatment + scale(dis_to_edge) + visit + (1|subcompartment),
                          data = daubentonii, family=binomial, weights=tot_intervals, 
                          na.action = "na.fail")
 ## no errors
